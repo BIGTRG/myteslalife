@@ -42,6 +42,17 @@ export function createApp({ pool, sendEmail = async () => {}, authMax = 10 }) {
     const path = url.pathname.replace(/\/+$/, '') || '/';
     const route = `${req.method} ${path}`;
     try {
+      // CORS: allow the admin origin (env, comma-separated) + local dev.
+      const allowed = (process.env.CORS_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean);
+      const origin = req.headers.origin;
+      if (origin && (allowed.includes(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) {
+        res.setHeader('access-control-allow-origin', origin);
+        res.setHeader('vary', 'origin');
+        res.setHeader('access-control-allow-headers', 'content-type, authorization');
+        res.setHeader('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
+      }
+      if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+
       if (!limit(ip)) return json(res, 429, { error: 'rate_limited' });
 
       // ---- public / legal ----
