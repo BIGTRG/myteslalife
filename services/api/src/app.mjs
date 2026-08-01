@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { audit, track } from '@mtl/db';
 import { DISCLAIMER } from '@mtl/tokens';
 import { requestMagicLink, redeemMagicLink, memberFromSession, revokeSession } from './auth.mjs';
+import { isAdmin, handleAdmin } from './admin.mjs';
 import { tosHtml, privacyHtml } from './legal.mjs';
 
 const HANDLE_RE = /^[a-z0-9_]{3,24}$/;
@@ -127,6 +128,23 @@ export function createApp({ pool, sendEmail = async () => {}, authMax = 10 }) {
         await pool.query('UPDATE sessions SET revoked_at = now() WHERE member_id=$1', [me.id]);
         await audit(pool, `member:${me.id}`, 'account_deleted', `member:${me.id}`);
         return json(res, 200, { ok: true });
+      }
+
+      // ---- reports (any member can flag content) ----
+      if (route === 'POST /v1/reports') {
+        const { subject_kind, subject_id, reason } = await readBody(req);
+        if (!['post','reply','car','member'].includes(subject_kind) || !reason?.trim())
+          return json(res, 400, { error: 'bad_report' });
+        await pool.query(
+          'INSERT INTO reports(reporter_member_id, subject_kind, subject_id, reason) VALUES ($1,$2,$3,$4)',
+          [me.id, subject_kind, subject_id, reason.trim()]);
+        return json(res, 201, { ok: true });
+      }
+
+      // ---- admin ----
+      if (path.startsWith('/v1/admin/')) {
+        if (!isAdmin(me)) return json(res, 403, { error: 'forbidden' });
+        return handleAdmin({ pool, me, req, route, path, url, readBody, json, res });
       }
 
       // ---- cars ----
