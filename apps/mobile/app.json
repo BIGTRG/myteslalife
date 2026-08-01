@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "myteslalife",
+    "slug": "myteslalife",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#14142E",
+    "platforms": ["ios", "android", "web"],
+    "ios": { "supportsTablet": false, "bundleIdentifier": "com.trgtechlink.myteslalife" },
+    "android": { "package": "com.trgtechlink.myteslalife" },
+    "web": { "bundler": "metro" }
+  }
+}

@@ -6,7 +6,8 @@
   "workspaces": [
     "packages/*",
     "services/*",
-    "apps/admin"
+    "apps/admin",
+    "apps/mobile"
   ],
   "engines": {
     "node": ">=22"
