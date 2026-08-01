@@ -1,0 +1,3 @@
+{ "name": "@mtl/api", "version": "0.1.0", "type": "module", "main": "src/main.mjs",
+  "dependencies": { "@mtl/db": "0.1.0", "@mtl/tokens": "0.1.0" },
+  "devDependencies": { "embedded-postgres": "^18.4.0-beta.17" } }

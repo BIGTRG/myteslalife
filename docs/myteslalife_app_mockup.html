@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>myteslalife — Mobile App, Screen by Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#6C4DFF; --spark:#4DE1FF; --ink:#16163A;
+    --deep:#14142E; --deep2:#1C1C40; --card:#232350; --line:#2E2E5C;
+    --txt:#EEF0FB; --mut:#8F94BE; --good:#3DDC97; --warn:#FFB324;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Space Grotesk','Segoe UI',system-ui,sans-serif;background:#F4F5FA;color:var(--ink);padding:48px 28px 90px}
+  .head{max-width:1240px;margin:0 auto 44px}
+  .head h1{font-size:2rem;letter-spacing:-1px}
+  .head p{color:#6B7194;margin-top:6px;max-width:780px}
+  .grid{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:38px 28px}
+
+  .shot{text-align:center}
+  .phone{width:270px;height:560px;margin:0 auto;background:var(--deep);border-radius:38px;border:6px solid #0C0C22;box-shadow:0 30px 70px rgba(12,12,40,.35);overflow:hidden;position:relative;text-align:left;color:var(--txt)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:86px;height:20px;background:#0C0C22;border-radius:12px;z-index:5}
+  .screen{position:absolute;inset:0;padding:40px 14px 58px;overflow:hidden}
+  .caption{margin-top:18px}
+  .caption b{display:block;font-size:1.05rem}
+  .caption span{color:#6B7194;font-size:.85rem;max-width:280px;display:inline-block}
+  .n{display:inline-block;background:var(--ink);color:#fff;font-weight:700;font-size:.78rem;border-radius:7px;padding:1px 8px;margin-right:6px}
+
+  /* tab bar */
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:50px;background:#101028;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;font-size:1.05rem;z-index:5}
+  .tabbar div{opacity:.4}
+  .tabbar div.on{opacity:1}
+  .tabbar .wheel{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--spark));display:flex;align-items:center;justify-content:center;font-size:.95rem;opacity:1;box-shadow:0 4px 14px rgba(108,77,255,.5)}
+
+  /* shared bits */
+  .apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .apphead b{font-size:.98rem}
+  .apphead small{color:var(--mut);font-size:.7rem;display:block}
+  .avatarS{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--spark));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff}
+  .cardp{background:var(--deep2);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+  .muted{color:var(--mut);font-size:.68rem}
+  .chip{display:inline-block;background:rgba(108,77,255,.18);border:1px solid rgba(108,77,255,.5);color:#C9BBFF;border-radius:999px;padding:2px 9px;font-size:.62rem;font-weight:600}
+  .chip.g{background:rgba(61,220,151,.14);border-color:rgba(61,220,151,.45);color:var(--good)}
+  .chip.y{background:rgba(255,179,36,.14);border-color:rgba(255,179,36,.45);color:var(--warn)}
+  .bigbtn{background:linear-gradient(90deg,var(--brand),#8F6BFF);color:#fff;border-radius:12px;text-align:center;padding:10px;font-weight:600;font-size:.8rem;box-shadow:0 8px 20px rgba(108,77,255,.4)}
+  .ctl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+  .ctl div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 0;text-align:center;font-size:1rem}
+  .ctl span{display:block;font-size:.56rem;color:var(--mut);margin-top:3px}
+  .bar{height:8px;border-radius:99px;background:#101028;overflow:hidden;margin:6px 0 3px}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),var(--spark))}
+  .row2{display:flex;justify-content:space-between;align-items:center}
+  .stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+  .stat3 div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+  .stat3 b{font-size:.85rem;display:block}
+  .stat3 span{font-size:.56rem;color:var(--mut)}
+  .msg{background:var(--card);border-radius:12px;padding:9px 11px;font-size:.72rem;margin-bottom:8px;line-height:1.45}
+  .msg.me{background:var(--brand);margin-left:34px}
+  .msg .tag{display:block;font-size:.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--spark);margin-bottom:2px}
+  .feeditem{border-bottom:1px solid var(--line);padding:9px 0}
+  .prod{display:flex;gap:9px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px;margin-bottom:8px}
+  .prod .ph{width:40px;height:40px;border-radius:9px;background:linear-gradient(135deg,#2E2E5C,#3A3A70);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+  .prod b{font-size:.72rem;display:block}
+  .prod .muted{font-size:.6rem}
+  .price{margin-left:auto;font-weight:700;color:var(--spark);font-size:.75rem}
+  .mapmini{position:relative;height:150px;border-radius:14px;background:
+    linear-gradient(#1A1A3E 1px, transparent 1px),linear-gradient(90deg,#1A1A3E 1px, transparent 1px),#15153A;background-size:24px 24px;margin-bottom:10px;overflow:hidden}
+  .mpin{position:absolute;width:20px;height:20px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center}
+  .mpin span{transform:rotate(45deg);font-size:.5rem;font-weight:700;color:#fff}
+  .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:14px}
+  .tl{position:relative;padding-bottom:12px}
+  .tl:before{content:"";position:absolute;left:-20px;top:3px;width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--spark))}
+  .tl b{font-size:.72rem;display:block}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <h1>myteslalife — the app, screen by screen</h1>
+  <p>Eight core screens in the ultraviolet identity. The wheel logo sits center-tab on every screen — one tap home from anywhere. Dark UI by design: this app lives in cars at night, in garages, at charging stops.</p>
+</div>
+
+<div class="grid">
+
+<!-- 1. GARAGE / HOME -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead">
+        <div><b>Good morning, Deon</b><small>Red October is ready</small></div>
+        <div class="avatarS">D</div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.85rem">&ldquo;Red October&rdquo;</b><span class="chip g">&#9679; Online</span></div>
+        <div class="muted">2024 Model Y · 61,204 mi</div>
+        <div class="bar"><i style="width:84%"></i></div>
+        <div class="row2"><span class="muted">Battery 84% · 261 mi</span><span class="muted">72&deg;F inside</span></div>
+        <div class="ctl">
+          <div>&#128274;<span>Lock</span></div>
+          <div>&#10052;&#65039;<span>Climate</span></div>
+          <div>&#128205;<span>Locate</span></div>
+          <div>&#9889;<span>Charge</span></div>
+        </div>
+        <div class="bigbtn">&#128663; Road Trip Mode</div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.72rem">This week</b><span class="chip">Level 12</span></div>
+        <div class="stat3">
+          <div><b>212</b><span>miles</span></div>
+          <div><b>247</b><span>Wh/mi</span></div>
+          <div><b>#8</b><span>city rank</span></div>
+        </div>
+      </div>
+      <div class="tabbar"><div class="on">&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">1</span>My Garage (Home)</b><span>Your car's live status + one-tap controls, and the "Road Trip Mode" ritual button. Streaks and city rank pull you back daily.</span></div>
+</div>
+
+<!-- 2. REMOTE CONTROLS -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Controls</b><small>Red October · parked at Home</small></div><div class="avatarS">R</div></div>
+      <div class="ctl" style="grid-template-columns:repeat(3,1fr)">
+        <div>&#128274;<span>Unlock</span></div>
+        <div>&#128264;<span>Honk</span></div>
+        <div>&#128294;<span>Flash</span></div>
+        <div>&#129695;<span>Frunk</span></div>
+        <div>&#128230;<span>Trunk</span></div>
+        <div>&#127788;&#65039;<span>Vent</span></div>
+        <div>&#128737;&#65039;<span>Sentry</span></div>
+        <div>&#128663;<span>Remote Start</span></div>
+        <div>&#128694;<span>Valet</span></div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.75rem">&#10052;&#65039; Climate</b><span class="chip">Auto 70&deg;F</span></div>
+        <div class="muted" style="margin-top:4px">Defrost · Seat heat L2 · Wheel heat on</div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.75rem">&#9889; Charging</b><span class="chip g">Scheduled 11:30 PM</span></div>
+        <div class="bar"><i style="width:80%"></i></div>
+        <div class="row2"><span class="muted">Limit 80%</span><span class="muted">$0.11/kWh off-peak</span></div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.75rem">&#128118; Teen Mode</b><span class="chip y">Speed cap 70 mph</span></div>
+        <div class="muted" style="margin-top:4px">Geofence: school &harr; home · alerts on</div>
+      </div>
+      <div class="tabbar"><div class="on">&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">2</span>Full Remote Control</b><span>Everything the official app does — lock, climate, charge, Sentry, Remote Start — plus Teen Mode and schedules it doesn't.</span></div>
+</div>
+
+<!-- 3. FEED -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Feed</b><small>Following 42 cars</small></div><div class="avatarS">D</div></div>
+      <div class="feeditem">
+        <div class="row2"><b style="font-size:.74rem">&#9889; Midnight · Model S Plaid</b><span class="muted">2h</span></div>
+        <div class="muted" style="margin:4px 0">Crossed 100,000 miles today. Original battery, 91% health. We ride at dawn. &#127749;</div>
+        <span class="chip">&#127942; 100K Club</span> <span class="muted">&hearts; 214 · 38 replies</span>
+      </div>
+      <div class="feeditem">
+        <div class="row2"><b style="font-size:.74rem">&#128663; Red October · trip log</b><span class="muted">5h</span></div>
+        <div class="mapmini" style="height:84px">
+          <div class="mpin" style="left:12%;top:56%;background:#E82127"><span>S</span></div>
+          <div class="mpin" style="left:52%;top:30%;background:#E82127"><span>S</span></div>
+          <div class="mpin" style="left:82%;top:52%;background:#6C4DFF"><span>&#9873;</span></div>
+        </div>
+        <div class="muted">Flagstaff &rarr; Moab · 342 mi · 2 stops · 244 Wh/mi</div>
+      </div>
+      <div class="feeditem">
+        <div class="row2"><b style="font-size:.74rem">Phoenix Owners Club</b><span class="muted">1d</span></div>
+        <div class="muted" style="margin:4px 0">Cars &amp; Coffee Saturday 8am — 47 going. Convoy from Tempe?</div>
+        <span class="chip g">RSVP</span>
+      </div>
+      <div class="tabbar"><div>&#127968;</div><div class="on">&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">3</span>The Feed</b><span>Follow cars, not just people — milestones, auto-generated trip logs, and club events in one scroll.</span></div>
+</div>
+
+<!-- 4. CARSOUL CHAT -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Red October</b><small>CarSoul&trade; · witty · 61,204 mi of memories</small></div><div class="avatarS">R</div></div>
+      <div class="msg"><span class="tag">Red October</span>Boss, I'm at 84% and it's 72&deg; inside. Also — someone parked VERY close on my left. I got it on camera. Want the clip?</div>
+      <div class="msg me">How's your battery doing compared to other Model Ys?</div>
+      <div class="msg"><span class="tag">From real telemetry</span>Holding 94% of original capacity — better than 78% of 2024 Model Ys at my mileage. Your 80% home-charging habit is why. Gold star. &#11088;</div>
+      <div class="msg me">Plan the Denver trip for Friday</div>
+      <div class="msg"><span class="tag">Copilot acting</span>Done: 3 Supercharger stops (all rated 4.5+), hotel with free L2 charging booked, route sent to my nav. I'll precondition at 6:40 AM. Convoy invite sent to @midnight.</div>
+      <div class="bigbtn" style="position:absolute;left:14px;right:14px;bottom:60px">&#127908; Talk to your car</div>
+      <div class="tabbar"><div>&#127968;</div><div class="on">&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">4</span>CarSoul&trade; Chat</b><span>Your car talks back — from its real data — and the Copilot executes: trips planned, hotels booked, convoys invited.</span></div>
+</div>
+
+<!-- 5. CHARGING HUB -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Charging Hub</b><small>All networks · 214 chargers near you</small></div><div class="avatarS">&#9889;</div></div>
+      <div class="mapmini">
+        <div class="mpin" style="left:16%;top:30%;background:#E82127"><span>S</span></div>
+        <div class="mpin" style="left:48%;top:18%;background:#2F5EFF"><span>C</span></div>
+        <div class="mpin" style="left:72%;top:42%;background:#00A388"><span>E</span></div>
+        <div class="mpin" style="left:30%;top:64%;background:#F59E0B"><span>EA</span></div>
+        <div class="mpin" style="left:60%;top:74%;background:#6C4DFF"><span>D</span></div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.74rem">Supercharger · Camelback Rd</b><span class="chip g">6 of 8 open</span></div>
+        <div class="row2"><span class="muted">&#11088; 4.9 · 62 member visits · $0.28/kWh</span><span class="muted">0.8 mi</span></div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.74rem">EVgo · Biltmore</b><span class="chip y">&#9888; 2 stalls down</span></div>
+        <div class="row2"><span class="muted">reported 3h ago by @redoctober</span><span class="muted">1.2 mi</span></div>
+      </div>
+      <div class="bigbtn">&#9889; Charge Pass · $42.80 · works everywhere</div>
+      <div class="tabbar"><div>&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div class="on">&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">5</span>Charging Hub</b><span>Every network on one map with owner truth on every pin — and one wallet that pays on all of them.</span></div>
+</div>
+
+<!-- 6. MARKETPLACE -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Marketplace</b><small>Shop @midnight's mod list</small></div><div class="avatarS">&#128722;</div></div>
+      <div class="cardp" style="padding:9px">
+        <div class="muted" style="margin-bottom:6px">&#128663; As seen on &ldquo;Midnight&rdquo; · Model S Plaid</div>
+        <div class="prod"><div class="ph">&#127906;</div><div><b>All-Weather Floor Mats</b><div class="muted">&#11088; 4.8 · 1.2K owner reviews</div></div><div class="price">$129</div></div>
+        <div class="prod"><div class="ph">&#128295;</div><div><b>Roof Rack System</b><div class="muted">&#11088; 4.7 · fits 2021+ Model S</div></div><div class="price">$389</div></div>
+        <div class="prod"><div class="ph">&#128161;</div><div><b>Ambient Light Kit</b><div class="muted">&#11088; 4.6 · installed in 40 min</div></div><div class="price">$79</div></div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.74rem">&#129309; Group Buy · ends in 2d</b><span class="chip">312 joined</span></div>
+        <div class="muted" style="margin:3px 0">Sunshade full-set — 38% off at 400 buyers</div>
+        <div class="bar"><i style="width:78%"></i></div>
+      </div>
+      <div class="bigbtn">&#127991;&#65039; myteslalife Essentials &mdash; new drops</div>
+      <div class="tabbar"><div>&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div class="on">&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">6</span>Marketplace</b><span>Every mod list is shoppable, group buys unlock discounts, and the Essentials house line drops here first.</span></div>
+</div>
+
+<!-- 7. EARNINGS -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>Earnings</b><small>Robotaxi + energy · July</small></div><div class="avatarS">$</div></div>
+      <div class="cardp" style="text-align:center;padding:16px">
+        <div class="muted">Red October earned this month</div>
+        <div style="font-size:1.9rem;font-weight:700;background:linear-gradient(90deg,#6C4DFF,#4DE1FF);-webkit-background-clip:text;background-clip:text;color:transparent">$1,284</div>
+        <div class="muted">142 robotaxi trips · $63 energy sold</div>
+      </div>
+      <div class="cardp">
+        <div class="row2"><b style="font-size:.74rem">&#129302; AI Dispatcher</b><span class="chip g">Auto · on</span></div>
+        <div class="muted" style="margin-top:4px">Lending 9am–3pm weekdays · home before school pickup · surge detected downtown +$4.10/trip</div>
+      </div>
+      <div class="stat3">
+        <div><b>$0.89</b><span>net / mile</span></div>
+        <div><b>#3</b><span>in Phoenix</span></div>
+        <div><b>$142</b><span>tax est.</span></div>
+      </div>
+      <div class="bigbtn" style="margin-top:10px">&#128196; Export tax-ready report</div>
+      <div class="tabbar"><div class="on">&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">7</span>Earnings Manager</b><span>When the robotaxi fleet opens: AI dispatch, honest profit-per-mile, city leaderboard, tax exports. Your car, on payroll.</span></div>
+</div>
+
+<!-- 8. CAR PROFILE -->
+<div class="shot">
+  <div class="phone"><div class="notch"></div>
+    <div class="screen">
+      <div class="apphead"><div><b>@redoctober</b><small>2024 Model Y · 892 followers</small></div><div class="avatarS">R</div></div>
+      <div class="cardp" style="padding:10px">
+        <div class="row2"><span class="chip">Battery A&minus; · 94%</span><span class="chip g">Verified history</span></div>
+        <div class="stat3" style="margin-top:8px">
+          <div><b>61,204</b><span>miles</span></div>
+          <div><b>14</b><span>states</span></div>
+          <div><b>23</b><span>mods</span></div>
+        </div>
+      </div>
+      <div class="cardp">
+        <b style="font-size:.74rem">The Autobiography</b>
+        <div class="timeline" style="margin-top:8px">
+          <div class="tl"><b>Crossed 60,000 miles</b><span class="muted">Rocky Mountains · last week</span></div>
+          <div class="tl"><b>Software v2026.28 installed</b><span class="muted">Grok vehicle commands unlocked</span></div>
+          <div class="tl"><b>Survived Texas hailstorm</b><span class="muted">Sentry caught the whole thing</span></div>
+          <div class="tl"><b>Delivery Day &#127881;</b><span class="muted">March 2024 · the story begins</span></div>
+        </div>
+      </div>
+      <div class="bigbtn">&#128172; Interview this car</div>
+      <div class="tabbar"><div class="on">&#127968;</div><div>&#128172;</div><div class="wheel">&#128663;</div><div>&#128506;&#65039;</div><div>&#128722;</div></div>
+    </div>
+  </div>
+  <div class="caption"><b><span class="n">8</span>Car Profile</b><span>The living page every Tesla gets: verified stats, the auto-written autobiography, and the "Interview this car" button that sells used Teslas.</span></div>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 660 170" width="660" height="170">
+  <defs>
+    <linearGradient id="halo" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6C4DFF"/>
+      <stop offset="100%" stop-color="#4DE1FF"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6C4DFF"/>
+      <stop offset="100%" stop-color="#8F6BFF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ===== THE MARK: "The Autopilot Wheel" =====
+       A steering wheel whose spokes form the T, with emanation waves —
+       the car sensing the road, driving itself. -->
+  <g transform="translate(85,92)">
+    <!-- emanation waves -->
+    <path d="M -63 -34 A 72 72 0 0 1 63 -34" fill="none" stroke="url(#halo)" stroke-width="5" stroke-linecap="round" opacity="0.28"/>
+    <path d="M -52 -26 A 59 59 0 0 1 52 -26" fill="none" stroke="url(#halo)" stroke-width="5" stroke-linecap="round" opacity="0.55"/>
+    <!-- wheel rim -->
+    <circle cx="0" cy="8" r="44" fill="none" stroke="url(#halo)" stroke-width="7.5"/>
+    <!-- spokes forming the T -->
+    <line x1="-40" y1="4" x2="40" y2="4" stroke="#16163A" stroke-width="7.5" stroke-linecap="round"/>
+    <line x1="0" y1="4" x2="0" y2="48" stroke="#16163A" stroke-width="7.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- ===== WORDMARK ===== -->
+  <g font-family="'Space Grotesk','Segoe UI',system-ui,sans-serif" font-weight="700" font-size="58">
+    <text x="180" y="108" fill="#16163A" letter-spacing="-1">my<tspan fill="url(#word)">tesla</tspan>life</text>
+  </g>
+  <text x="183" y="136" font-family="'Space Grotesk','Segoe UI',system-ui,sans-serif" font-weight="500"
+        font-size="15" letter-spacing="6" fill="#8B90B3">EVERY CAR HAS A LIFE</text>
+</svg>

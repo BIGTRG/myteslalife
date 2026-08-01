@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+*.local
+.DS_Store
+apps/mobile/.expo/
+apps/admin/.next/
+tools/pgdata/

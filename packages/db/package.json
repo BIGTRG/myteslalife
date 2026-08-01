@@ -1,0 +1,2 @@
+{ "name": "@mtl/db", "version": "0.1.0", "type": "module", "main": "src/index.mjs",
+  "dependencies": { "pg": "^8.13.0" } }

@@ -1,0 +1,12 @@
+{
+  "name": "myteslalife",
+  "private": true,
+  "version": "0.1.0",
+  "description": "myteslalife — every car has a life. This is where it lives.",
+  "workspaces": ["packages/*", "services/*"],
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test --test-force-exit packages/db/test/*.test.mjs services/api/test/*.test.mjs",
+    "dev": "node --watch services/api/src/main.mjs"
+  }
+}
