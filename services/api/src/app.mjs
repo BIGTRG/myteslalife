@@ -135,7 +135,10 @@ export function createApp({ pool, sendEmail = async () => {}, authMax = 10 }) {
         return json(res, 200, { member: r });
       }
       if (route === 'DELETE /v1/me') { // Apple-required in-app account deletion
-        await pool.query('UPDATE members SET deleted_at = now() WHERE id=$1', [me.id]);
+        // Anonymize the unique email so the person can re-register later (and we hold no PII).
+        await pool.query(
+          "UPDATE members SET deleted_at = now(), first_name = NULL, email = 'deleted+' || id || '@deleted.invalid' WHERE id=$1",
+          [me.id]);
         await pool.query('UPDATE sessions SET revoked_at = now() WHERE member_id=$1', [me.id]);
         await audit(pool, `member:${me.id}`, 'account_deleted', `member:${me.id}`);
         return json(res, 200, { ok: true });
