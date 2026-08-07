@@ -1,0 +1,65 @@
+# myteslalife stack on fleet #1. All ports localhost-bound; nginx on host terminates TLS.
+# Requires deploy/.env (not in repo): POSTGRES_PASSWORD, SMTP_USER, SMTP_PASS, ADMIN_EMAILS.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mtl-postgres
+    environment:
+      POSTGRES_DB: myteslalife
+      POSTGRES_USER: mtl
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - mtl_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mtl -d myteslalife"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.api
+    container_name: mtl-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://mtl:${POSTGRES_PASSWORD}@postgres:5432/myteslalife
+      PORT: "8110"
+      APP_URL: https://myteslalife.com
+      CORS_ORIGINS: https://myteslalife.com,https://www.myteslalife.com,https://admin.myteslalife.com
+      ADMIN_EMAILS: ${ADMIN_EMAILS}
+      SMTP_HOST: mail.geniuseye.ai
+      SMTP_PORT: "587"
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      MAIL_FROM: ${MAIL_FROM:-myteslalife <mtlmailer@geniuseye.ai>}
+    ports:
+      - "127.0.0.1:8110:8110"
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.admin
+      args:
+        NEXT_PUBLIC_API_BASE: https://api.myteslalife.com
+    container_name: mtl-admin
+    ports:
+      - "127.0.0.1:8111:8111"
+    restart: unless-stopped
+
+  web:
+    image: nginx:alpine
+    container_name: mtl-web
+    volumes:
+      - ./webdist:/usr/share/nginx/html:ro
+      - ./web_nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "127.0.0.1:8112:80"
+    restart: unless-stopped
+
+volumes:
+  mtl_pgdata:

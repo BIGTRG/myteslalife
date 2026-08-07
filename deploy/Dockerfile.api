@@ -1,0 +1,13 @@
+# myteslalife API — custom node:http service, no framework.
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY packages/tokens/package.json packages/tokens/
+COPY packages/db/package.json packages/db/
+COPY services/api/package.json services/api/
+RUN npm ci --omit=dev --workspace services/api --workspace packages/db --workspace packages/tokens
+COPY packages ./packages
+COPY services/api ./services/api
+ENV NODE_ENV=production
+EXPOSE 8110
+CMD ["node", "services/api/src/main.mjs"]

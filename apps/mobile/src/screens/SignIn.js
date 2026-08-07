@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Platform, View, Text, TextInput, ScrollView } from 'react-native';
 import { color, radius, DISCLAIMER } from '../theme.js';
 import { api, setSession } from '../api.js';
 import Wheel from '../ui/wheel.js';
@@ -10,6 +10,19 @@ export default function SignIn({ onAuthed }) {
   const [token, setToken] = useState('');
   const [stage, setStage] = useState('email'); // email -> link
   const [err, setErr] = useState(null);
+
+  // Web deep link: the magic-link email points at /auth?token=... — redeem it automatically.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const t = new URLSearchParams(window.location.search).get('token');
+    if (!t) return;
+    window.history.replaceState(null, '', '/');
+    (async () => {
+      const r = await api('POST', '/v1/auth/redeem', { token: t });
+      if (r.status === 200) { setSession(r.data.session); onAuthed(); }
+      else { setStage('link'); setErr('That link is expired or already used — request a new one.'); }
+    })();
+  }, []);
 
   return (
     <ScrollView style={s.screen} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}>
